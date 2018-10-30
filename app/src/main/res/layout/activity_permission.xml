@@ -14,7 +14,8 @@
 		android:gravity="end"
 		android:text="@string/index_message"
 		android:textColor="@color/text_color_white"
-		android:textSize="@dimen/text_size_medium2" />
+		android:textSize="@dimen/text_size_medium2"
+		android:textStyle="bold"/>
 
 	<TextView
 		android:layout_width="match_parent"
