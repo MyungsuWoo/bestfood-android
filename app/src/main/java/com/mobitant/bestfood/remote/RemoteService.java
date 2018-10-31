@@ -55,6 +55,9 @@ public interface RemoteService {
 
 	@Multipart
 	@POST("/food/info/image")
+	Call<ResponseBody> uploadFoodImage(@Part("info_seq") RequestBody infoSeq, @Part("image_memo") RequestBody imageMemo, @Part MultipartBody.Part file);
+
+	@GET("/food/list")
 	Call<ArrayList<FoodInfoItem>> listFoodInfo(@Query("member_seq") int memberSeq,
 	                                           @Query("user_latitude") double userLatitude,
 	                                           @Query("user_longitude") double userLongitude,
