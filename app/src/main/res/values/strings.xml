@@ -26,7 +26,6 @@
 	<string name="submit">확인</string>
 	<string name="network_not_working">네트워크에 연결되어 있지 않습니다.</string>
 
-
 	<!-- 권한 화면 -->
 	<string name="permission_checking">권한 확인중&#8230;</string>
 	<string name="permission_setting_title">권한 설정</string>
