@@ -31,4 +31,11 @@
 	<string name="permission_setting_title">권한 설정</string>
 	<string name="permission_setting_message">앱을 실행하기 위해서는 권한 설정을 해야 합니다.</string>
 	<string name="permission_setting_restart">권한을 설정하고 다시 실행해 주세요.</string>
+
+	<!-- 왼쪽 메뉴 -->
+	<string name="nav_list">맛집리스트</string>
+	<string name="nav_map">지도리스트</string>
+	<string name="nanv_keep">즐겨찾기</string>
+	<string name="nav_register">맛집등록</string>
+	<string name="nav_profile">프로필설정</string>
 </resources>
