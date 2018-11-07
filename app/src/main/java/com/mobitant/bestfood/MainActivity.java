@@ -1,6 +1,7 @@
 package com.mobitant.bestfood;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.view.View;
@@ -12,81 +13,133 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
+import com.mobitant.bestfood.item.MemberInfoItem;
+import com.mobitant.bestfood.lib.GoLib;
+import com.mobitant.bestfood.lib.StringLib;
+import com.mobitant.bestfood.remote.RemoteService;
+import com.squareup.picasso.Picasso;
+
+import de.hdodenhof.circleimageview.CircleImageView;
+
+/**
+ * 맛집 정보 앱의 핵심 Activity이며, 왼쪽에 Navigation View를 가지며
+ * 다양한 맛집 Fragment를 보여주는 컨테이너 역할을 한다.
+ */
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+	private final String TAG = getClass().getSimpleName();
+	
+	MemberInfoItem memberInfoItem;
+	DrawerLayout drawer;
+	View headerLayout;
+	
+	CircleImageView profileIconImage;
+	
+	/**
+	 * Activity와 Navigation View를 설정하고 BestFoodListFragment를 화면에 보여준다.
+	 * @param savedInstanceState Activity가 새로 생성되었을 경우에 이전 상태 값을 가지는 객체
+	 */
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
+		
+		memberInfoItem = ((MyApp)getApplication()).getMemberInfoItem();
+		
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer = findViewById(R.id.drawer_layout);
+        
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        
+        headerLayout = navigationView.getHeaderView(0);
+		
+//		GoLib.getInstance().goFragment(getSupportFragmentManager(), R.id.content_main, BestFoodListFragment.newInstance());
     }
-
-    @Override
+	
+	/**
+	 * 프로필 정보는 별도 Activity에서 변경될 수 있으므로
+	 * 변경을 바로 감지하기 위해 화면이 새로 보여질 때마다 setProfileView()를 호출한다.
+	 */
+	@Override
+	protected void onPostResume() {
+		super.onPostResume();
+		
+		setProfileView();
+	}
+	
+	/**
+	 * 프로필 이미지와 프로필 이름을 설정한다.
+	 */
+	private void setProfileView() {
+		profileIconImage = headerLayout.findViewById(R.id.profile_icon);
+		profileIconImage.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				drawer.closeDrawer(GravityCompat.START);
+				GoLib.getInstance().goProfileActivity(MainActivity.this);
+			}
+		});
+		
+		if (StringLib.getInstance().isBlank(memberInfoItem.memberIconFilename)) {
+			Picasso.with(this).load(R.drawable.ic_person).into(profileIconImage);
+		} else {
+			Picasso.with(this).load(RemoteService.MEMBER_ICON_URL + memberInfoItem.memberIconFilename).into(profileIconImage);
+		}
+		
+		TextView nameText = headerLayout.findViewById(R.id.name);
+		
+		if (memberInfoItem.name == null || memberInfoItem.name.equals("")) {
+			nameText.setText(R.string.name_need);
+		} else {
+			nameText.setText(memberInfoItem.name);
+		}
+	}
+	
+	/**
+	 * 폰에서 뒤로가기 버튼을 클릭했을 때 호출하는 메소드이며
+	 * 네비게이션 메뉴가 보인 상태라면 네비게이션 메뉴를 닫는다.
+	 */
+	@Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
+	
+	/**
+	 * 네비게이션 메뉴를 클릭했을 때 호출되는 메소드
+	 * @param menuItem 메뉴 아이템 객체
+	 * @return 메뉴 클릭 이벤트의 처리 여부
+	 */
+	@SuppressWarnings("StatementWithEmptyBody")
+	@Override
+	public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+		int id = menuItem.getItemId();
+		
+		if (id == R.id.nav_list) {
+		
+		} else if (id == R.id.nav_map) {
+		
+		} else if (id == R.id.nav_keep) {
+		
+		} else if (id == R.id.nav_register) {
+			GoLib.getInstance().goBestFoodRegisterActivity(this);
+		} else if (id == R.id.nav_profile) {
+			GoLib.getInstance().goProfileActivity(this);
+		}
+		
+		drawer.closeDrawer(GravityCompat.START);
+		return true;
+	}
 }
