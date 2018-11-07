@@ -70,8 +70,8 @@ public class MainActivity extends AppCompatActivity
 	 * 변경을 바로 감지하기 위해 화면이 새로 보여질 때마다 setProfileView()를 호출한다.
 	 */
 	@Override
-	protected void onPostResume() {
-		super.onPostResume();
+	protected void onResume() {
+		super.onResume();
 		
 		setProfileView();
 	}
